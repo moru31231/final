@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>randewu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: none;
+            padding: 20px;
+            position: relative;
+            height: 100vh;
+        }
+        .visible {
+            display: block;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+        }
+        #step1 .background, #step2 .background {
+            z-index: -1;
+        }
+        .option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+        .option video {
+            width: 200px;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .date-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+        }
+        .calendar button {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .calendar button:hover {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        .message-box {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="step1" class="container visible">
+        <div class="background" style="background-image: url('randew.jpg');"></div>
+        <h1>hej melka chcialbym sie w koncu z toba spotkac da rade</h1>
+        <button onclick="agree()">no ok?</button>
+    </div>
+
+    <div id="step2" class="container">
+        <div class="background" style="background-image: url('2909ba9ad145bdb5beaace18ec796c23.gif');"></div>
+        <h2>dobra to wybierz kiedy:</h2>
+        <div class="date-picker">
+            <input type="date" id="dateInput" />
+            <button onclick="chooseDate()">klik tu</button>
+        </div>
+    </div>
+
+    <div id="step3" class="container">
+        <h2>moje pomysly sory nie jestem kreatywny</h2>
+        <div class="option">
+           
+            <video src="473552814_9200158520043262_5863080197373841176_n.mp4" controls></video>
+            <button onclick="chooseOption('1', 'ubierz sie cieplo bo pizga ostatnio!',)">spacer po weju</button>
+        </div>
+        <div class="option">
+            
+            <video src="473229981_28648760764714870_5995009971444754234_n.mp4" controls></video>
+            <button onclick="chooseOption('2', 'mozemy jezdzic bez celu albo z celem moze jakas pizza w tym sopocie')">przejazdzka autem</button>
+        </div>
+        <div class="option">
+            
+            <video src="473584910_9046248452096526_8993612739969952765_n.mp4" controls></video>
+            <button onclick="chooseOption('3', 'masaz stop jest ewentualny jakby co')">chill w domu</button>
+        </div>
+    </div>
+
+    <div id="step4" class="container">
+        <h2 id="finalMessage"></h2>
+        <button onclick="goToMessage()">OK</button>
+    </div>
+
+    <div id="messageStep" class="container">
+        <h2>mozesz mi cos napisac jak chcesz, i jak ci sie zaden pomysl nie podobal to mozesz dac swoj</h2>
+        <textarea id="messageBox" class="message-box" placeholder=""></textarea>
+        <button onclick="sendMessage()">napisalas? to kliknij</button>
+    </div>
+
+    <div id="thankYou" class="container">
+        <h1>dobra to sie widzimy tylko nie olej mn to cie ucaluje</h1>
+        <div class="background" style="background-image: url('fd33af16bfe1611fc03678b9a801a88e.gif');"></div>
+    </div>
+
+    <script>
+        const webhookUrl = "https://discord.com/api/webhooks/1328722975939366933/9pUSl-7d3KKXhlGfjxb33FnSO8LW0Evv9ZWxpH1kFjoaP6j--RbGc4Ye8fUvl9sBjOly";
+        let selectedDate = null;
+        let selectedOption = null;
+
+    
+        function setMinDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+            document.getElementById('dateInput').setAttribute('min', minDate);
+        }
+
+        function agree() {
+            setMinDate();  
+            document.getElementById('step1').classList.remove('visible');
+            document.getElementById('step2').classList.add('visible');
+        }
+
+        function chooseDate() {
+            const dateInput = document.getElementById('dateInput').value;
+            if (dateInput) {
+                selectedDate = dateInput;
+                console.log("Wybrana data:", selectedDate);
+                document.getElementById('step2').classList.remove('visible');
+                document.getElementById('step3').classList.add('visible');
+            } else {
+                alert('wybierz jakas melka nie rob se jaj');
+            }
+        }
+
+        function chooseOption(option, message) {
+            selectedOption = option;
+            const finalMessage = `${option} - ${message}`;
+            document.getElementById('step3').classList.remove('visible');
+            document.getElementById('step4').classList.add('visible');
+            document.getElementById('finalMessage').innerText = finalMessage;
+        }
+
+        function goToMessage() {
+            document.getElementById('step4').classList.remove('visible');
+            document.getElementById('messageStep').classList.add('visible');
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('messageBox').value;
+            if (message) {
+                sendToDiscord(message);
+                document.getElementById('messageStep').classList.remove('visible');
+                document.getElementById('thankYou').classList.add('visible');
+            } else {
+                alert('napisz cokolwiek');
+            }
+        }
+
+        function sendToDiscord(message) {
+            const payload = {
+                content: `**Nowa odpowiedź!**\n\n**Data:** ${selectedDate}\n**Opcja:** ${selectedOption}\n**Wiadomość:** ${message}`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Błąd podczas wysyłania do Discorda:', response.statusText);
+                } else {
+                    console.log('Wiadomość wysłana do Discorda.');
+                }
+            })
+            .catch(error => console.error('Błąd:', error));
+        }
+    </script>
+</body>
+</html>
